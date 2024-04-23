@@ -156,3 +156,112 @@ print("Mean Absolute Error ",mae)
 b = np.sum(abs((y-y_pred)/y))
 mape = (100*b)/n
 print("Mean absolute Percentage Error",mape)
+
+
+
+
+
+
+# ************************************* SECOND METHOD *************************************
+
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
+from sklearn.linear_model import LinearRegression
+from scipy.stats import pearsonr
+import pandas as pd
+
+df = pd.read_csv("london_weather.csv")
+df.head()
+
+df = df.fillna(df.mean())
+print("After filling NUll values")
+print(df.head())
+
+df.describe()
+
+sunshine_median = df['sunshine'].median()
+transform = lambda x: 1 if x>=sunshine_median else 0
+df['sunshine'] = df['sunshine'].apply(transform)
+
+X = df.drop(['sunshine', 'date'], axis='columns')
+
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+X_sc = scaler.fit_transform(X)
+print(X_sc)
+df_scaled = pd.DataFrame(X_sc, columns=X.columns)
+print(df_scaled.head())
+
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+target = df['sunshine']
+
+X_train, X_test, y_train, y_test = train_test_split(df_scaled, target, train_size=0.8)
+
+
+model = KNeighborsClassifier()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, roc_auc_score
+
+import math
+
+tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+print("True Negatives {}".format(tn))
+print("False Negatives {}".format(fn))
+print("True Positives {}".format(tp))
+print("False Positives {}".format(fp))
+print()
+print("Accuracy:", ((tp+tn)/(tp+tn+fp+fn)))
+print("Error Rate:", ((fp+fn)/(tp+tn+fp+fn)))
+PRC=(tp/(tp+fp))
+print("Precision:", PRC)
+SNS=(tp/(tp+fn))
+SPC=(tn/(tn+fp))
+print("Sensitivity:", SNS)
+print("Specificity:", SPC)
+print("ROC area under the curve score:", math.sqrt((SNS**2+SPC**2)/2))
+print("F1 Score:", (2*PRC*SNS/(PRC+SNS)))
+print("Geometric Mean:", math.sqrt(SNS*SPC))
+
+print(classification_report(y_test, y_pred))
+print(confusion_matrix(y_test, y_pred))
+
+from sklearn.metrics import roc_curve
+import matplotlib.pyplot as plt
+fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+plt.plot(fpr, tpr)
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve')
+plt.show()
+
+
+
+X = df_scaled.min_temp
+y = df_scaled.max_temp
+
+corr, _ = pearsonr(X, y)
+print("Karl Pearson's coefficient of correlation:", corr)
+
+reg = LinearRegression()
+X = X.values
+X = X.reshape(-1, 1)
+reg.fit(X, y)
+y_pred = reg.predict(X)
+
+r_squared = r2_score(y, y_pred)
+print("R-squared:", r_squared)
+
+mse = mean_squared_error(y, y_pred)
+print("Mean Squared Error:", mse)
+
+rmse = math.sqrt(mse)
+print("RMSE:", rmse)
+
+from sklearn.metrics import mean_absolute_error
+mae = mean_absolute_error(y, y_pred)
+print("MAE:", mae)
+
+print("MAPE:", mae*100, end="%")

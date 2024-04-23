@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
-from google.colab import drive
-drive.mount('/content/drive')
-df = pd.read_csv('/content/drive/My Drive/ADS/supermarket_sales - Sheet1.csv')
+# from google.colab import drive
+# drive.mount('/content/drive')
+df = pd.read_csv('ADS Datasets/supermarket_sales - Sheet1.csv')
 
 
 df.head()
@@ -15,13 +15,9 @@ plt.scatter(df['Tax 5%'], df['Unit price'], c ="blue")
 
 
 #BoxPlot
-x2=df['Tax 5%']
-x4=df['gross income']
-x5=df['Rating']  
-data = pd.DataFrame({ "Tax 5%": x2,"gross income": x4,"Rating": x5})
 
-# Plot the dataframe
-ax = data[[ 'Tax 5%','gross income','Rating']].plot(kind='box', title='boxplot')
+ax = df[[ 'Tax 5%','gross income','Rating']].plot(kind='box', title='boxplot')
+
 
 
 #Distribution Chart / Distplot
@@ -47,14 +43,9 @@ plt.show()
 
 lst = df['Product line'].unique()
 print(lst)
-# t=[0,0,0,0,0,0]
-# for i in df:
-#   print(i)
-#   if i[5] in lst:
-#     if i[5]=='Health and beauty':
-#       t[0]=t[0]+i[9]
 
-# print(t)
+print(df[df['Product line']=='Electronic accessories'].count())
+
 
 t=[23,17,35,29,12,41]
 plt.pie(t,labels=lst,autopct ='% 1.1f %%', shadow = True)
@@ -81,6 +72,7 @@ sns.rugplot(data=data, x ="Total")
 plt.show()
 
 
+
 #column chart
 # plot between 2 attributes
 df1 = df.head(10)
@@ -89,6 +81,7 @@ plt.bar(df1['Gender'], df1['Total'])
 plt.xlabel("Gender")
 plt.ylabel("Total")
 plt.show()
+
 
 
 import plotly.express as px
@@ -102,6 +95,7 @@ import plotly.express as px
 
 fig = px.scatter(df1, x="Total", y="Tax 5%", size="Quantity", color="City", hover_name="Product line", log_x=True, size_max=60)
 fig.show()
+
 
 
 #Parallel
@@ -124,6 +118,7 @@ x.plot()
  
 # Display
 plt.show()
+
 
 
 import plotly.express as px
