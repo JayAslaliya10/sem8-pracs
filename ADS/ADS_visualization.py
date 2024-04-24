@@ -46,11 +46,15 @@ print(lst)
 
 print(df[df['Product line']=='Electronic accessories'].count())
 
-
-t=[23,17,35,29,12,41]
-plt.pie(t,labels=lst,autopct ='% 1.1f %%', shadow = True)
+#pie chart
+lst = df['Product line'].unique()
+print(lst)
+df_cat = pd.DataFrame({"categories": lst ,"count" : df['Product line'].value_counts()})
+plt.pie(df_cat['count'], labels=df_cat['categories'], autopct ='% 1.1f %%', shadow = True)
+plt.title('Pie Chart for Product Line Categories')
 plt.show()
-
+print(len(df))
+df_cat.head()
 
 #Density Chart
 df['Rating'].plot.density(color='green')
